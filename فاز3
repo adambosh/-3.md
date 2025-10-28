@@ -1,0 +1,125 @@
+# فاز ۳: هدفگیری و شلیک (درگیری رزمی) - F-35
+
+## نمودار کامل فرآیند هدفگیری و شلیک
+
+```mermaid
+flowchart TD
+    A[شروع فاز ۳: درگیری رزمی] --> B[رادار APG-81: قفل هدف در STT<br>یا سیستم EOTS: قفل هدف IR]
+    
+    B --> C[MC: محاسبات پیشرفته Launch Acceptability Region]
+    
+    subgraph C_sub[محاسبات LAR با ملاحظات Internal Bay]
+        C1[محاسبه Rne با درنظرگیری تاخیر 400ms دریچه]
+        C2[محاسبه ZAP با درنظرگیری افت آیرودینامیکی Bay Open]
+        C3[بررسی محدودیت‌های مانور با Bay باز]
+        C4[محاسبه No-Escape Zone با سنسورهای مختلف]
+        C5[درنظرگیری اثرات Stealth در محاسبات]
+    end
+    
+    C --> D[DAS: مانیتورینگ تهدیدات محیطی]
+    D --> E[MC: ارزیابی Cognitive Load خلبان]
+    
+    E --> F{خلبان Overload دارد؟}
+    F -- بله --> G[فعال‌سازی Auto-Mode/Pilot Assistant]
+    F -- خیر --> H[خلبان: انتخاب هدف با TDC/HMD/Cursor]
+    
+    G --> H
+    H --> I[MC: تعیین هدف به عنوان L&S]
+    I --> J[MC: بررسی Priority Target + Threat Evaluation]
+    J --> K[MC: رسم دایره ZAP و LAR پیشرفته روی HUD]
+    
+    subgraph L[بررسی نهایی شرایط شلیک F-35]
+        L1[Master Arm == ON?]
+        L2[Data Link سالم با BER < 10⁻⁶?]
+        L3[رادار/EOTS قفل پایدار دارد؟]
+        L4[IFF پاسخ HOSTILE?]
+        L5[ROE == WEAPON FREE?]
+        L6[Rmin < Ractual < Rne?]
+        L7[WoffW == TRUE?]
+        L8[سیستم BIT سالم؟]
+        L9[فاصله از دوستان ایمن؟]
+        L10[ارتفاع و دما در محدوده مجاز؟]
+        L11[Internal Bay Doors سالم؟]
+        L12[GPS/INS Bridging با دقت < 2m?]
+        L13[AVEL Launcher آماده؟]
+        L14[RF Coupling System سالم؟]
+        L15[تأخیر باز شدن دریچه قابل قبول؟]
+        L16[وضعیت Stealth قابل قبول؟]
+    end
+    
+    K --> L
+    L --> M{تمامی ۱۶ شرط برقرار است؟}
+    M -- خیر --> N[هشدار دقیق با راهنمایی corrective]
+    M -- بله --> O[MC: فعال‌سازی “Shoot Cue”]
+    
+    subgraph P[تعیین مود شلیک F-35]
+        P1[DL سالم → “CIA” Command Inertial Active]
+        P2[DL خراب → “NO-DL” Inertial Fly-Out]
+        P3[فشار Cage/Uncage → “HOBS” High Off-Boresight]
+        P4[اهداف متعدد → “MULTI-TARGET”]
+        P5[شرایط خاص → “LOAL” Lock-On After Launch]
+    end
+    
+    O --> P
+    P --> Q[MC: نمایش “IN LAR” ثابت سفید روی HUD]
+    Q --> R[MC: نمایش “Steering Dot” پیشرفته]
+    R --> S[هدف به نقطه بهینه LAR میرسد]
+    S --> T[MC: “IN LAR” چشمک‌زن زرد]
+    T --> U[خلبان: نیمه‌فشار دکمه تریگر]
+    U --> V[MC: “SHOOT” چشمک‌زن قرمز]
+    V --> W[خلبان: فشار کامل دکمه تریگر]
+    
+    subgraph X[سکانس نهایی شلیک F-35]
+        X1[SMS: “Execute Arm” + Cryptographic Auth]
+        X2[SMS: “Apply PA2” به موشک]
+        X3[SMS: فعال‌سازی سریع RF Coupling]
+        X4[SMS: آخرین تست سلامت سیکر]
+        X5{سیکر سالم است؟}
+        X5 -- خیر --> X6[“SEEKER FAIL” شلیک متوقف]
+        X5 -- بله --> X7[SMS: غیرفعال کردن Coupling]
+        X8[SMS: “Final Weapon Check” جامع]
+        X9{تمام چک‌ها Pass?}
+        X9 -- خیر --> X10[“LAUNCH INHIBIT”]
+        X9 -- بله --> X11[SMS: فرمان باز کردن دریچه‌ها]
+        X12[Internal Bay: باز شدن دریچه‌ها<br>تأخیر 200-500ms مانیتور شده]
+        X13{دریچه‌ها کاملاً باز شده‌اند؟}
+        X13 -- خیر --> X14[“DOOR JAM” اقدامات اضطراری]
+        X13 -- بله --> X15[SMS: فرمان “AVEL Launch”]
+        X16[AVEL Launcher: آتش چاشنی‌های پرتاب]
+        X17[موشک: جدا شدن از هواپیما<br>سقوط آزاد ۲۰-۳۰ متر]
+        X18[موتور موشک: آتش‌گیری با تاخیر برنامه‌ریزی شده]
+        X19[Internal Bay: بسته شدن خودکار دریچه‌ها]
+        X20{موشک به طور ایمن جدا شد؟}
+        X20 -- خیر --> X21[“SEPARATION FAIL” اقدامات اضطراری]
+        X20 -- بله --> X22[شلیک موفق]
+    end
+    
+    W --> X
+    X --> Y[SMS: قطع تغذیه PA1/PA2 از Launcher]
+    Y --> Z[SMS: فعال‌سازی “AMRAAM D/L ACTIVE”<br>برای سیستم EW]
+    
+    Z --> AA[MC: ادامه ارسال GPS/INS Bridging]
+    
+    subgraph AB[هدایت میانی F-35]
+        AB1[MC: ارسال داده هدف پیشرفته به موشک]
+        AB2[MC: ادامه GPS/INS Bridging]
+        AB3[موشک: پرواز با داده شبیه‌سازی شده]
+        AB4[موشک: تلاش برای دریافت GPS مستقیم]
+        AB5{GPS مستقیم دریافت شد؟}
+        AB5 -- بله --> AB6[موشک: قطع Bridging]
+        AB5 -- خیر --> AB7[ادامه Bridging]
+        AB8[موشک: ارسال تلهمتری سلامت]
+        AB9[MC: مانیتورینگ عملکرد موشک]
+    end
+    
+    AA --> AB
+    AB --> AC[موشک: رسیدن به نقطه “Pitbull”]
+    AC --> AD[موشک: روشن کردن رادار فعال]
+    AD --> AE[موشک: “Warhead Arming”]
+    AE --> AF[موشک: اعلام “Go Active” via DL]
+    AF --> AG[موشک: کسب هدف با سیکر]
+    AG --> AH[موشک: هدایت نهایی فعال]
+    AH --> AI[موشک: برخورد و انفجار]
+    AI --> AJ[سیستم: ثبت Mission Debrief Data]
+    
+    AJ --> AK[پایان فاز ۳: ماموریت تکمیل]
